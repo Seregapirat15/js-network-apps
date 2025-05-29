@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<!-- Объявление типа документа как HTML5 -->
+<html lang="ru">
+<!-- Начало HTML-документа с указанием языка (русский) -->
+<head>
+  <!-- Секция head содержит метаданные и настройки страницы -->
+  <meta charset="UTF-8">
+  <!-- Указание кодировки символов (UTF-8 для поддержки кириллицы) -->
+  <title>Калькулятор</title>
+  <!-- Заголовок страницы, отображается во вкладке браузера -->
+  <style>
+    /* Начало CSS-стилей */
+    :root {
+      /* Определение CSS-переменных для цветовой схемы */
+      --primary-bg: #1e1e2f;         /* Основной цвет фона */
+      --secondary-bg: #2e2e3f;       /* Вторичный цвет фона */
+      --button-color: #4f8a8b;       /* Цвет кнопок */
+      --button-hover: #f45b69;       /* Цвет кнопок при наведении */
+      --font-family: 'Segoe UI', sans-serif; /* Шрифт по умолчанию */
+      --font-color: #e0e0e0;         /* Цвет текста */
+      --result-color: #00e0ff;       /* Цвет результата в калькуляторе */
+    }
+
+    * {
+  font-family: 'Segoe UI', sans-serif;
+  font-style: italic;
+}
+
+    body {
+      /* Стили для всего тела документа */
+      margin: 0;                     /* Убирает отступы по умолчанию */
+      background-color: var(--primary-bg); /* Использует переменную для фона */
+      color: var(--font-color);      /* Цвет текста из переменной */
+      font-style: italic; /* Шрифт из переменной */
+      display: flex;                 /* Включает flexbox-разметку */
+      flex-direction: column;        /* Элементы в колонку */
+      align-items: center;           /* Центрирование по горизонтали */
+      justify-content: center;       /* Центрирование по вертикали */
+      height: 100vh;                /* Высота на весь видимый экран */
+    }
+
+    .calculator {
+      /* Стили для блока калькулятора */
+      background: var(--secondary-bg); /* Фон из переменной */
+      padding: 20px;                 /* Внутренние отступы */
+      border-radius: 20px;           /* Закругленные углы */
+      box-shadow: 0 0 20px rgba(0,0,0,0.5); /* Тень вокруг блока */
+      text-align: center;            /* Выравнивание текста по центру */
+    }
+
+    #result {
+      /* Стили для поля вывода результата */
+      background-color: #111;        /* Темный фон */
+      color: var(--result-color);    /* Цвет текста из переменной */
+      font-size: 2rem;              /* Крупный шрифт */
+      padding: 20px;                /* Внутренние отступы */
+      border-radius: 15px;          /* Закругленные углы */
+      margin-bottom: 20px;           /* Отступ снизу */
+    }
+
+    .row {
+      /* Стили для строк кнопок */
+      display: flex;                 /* Flex-контейнер */
+      justify-content: center;       /* Центрирование по горизонтали */
+      gap: 10px;                    /* Расстояние между кнопками */
+      margin-bottom: 10px;           /* Отступ снизу */
+    }
+
+    button {
+      /* Общие стили для всех кнопок */
+      background-color: var(--button-color); /* Цвет из переменной */
+      color: white;                 /* Белый текст */
+      font-size: 1.2rem;            /* Размер шрифта */
+      font-weight: bold;            /* Жирный шрифт */
+      padding: 15px;               /* Внутренние отступы */
+      width: 60px;                 /* Фиксированная ширина */
+      height: 60px;                /* Фиксированная высота */
+      border: none;                /* Убираем границу */
+      border-radius: 8px;          /* Закругленные углы */
+      cursor: pointer;             /* Курсор-указатель при наведении */
+      transition: background 0.3s, transform 0.2s; /* Плавные анимации */
+    }
+    button2 {
+      /* Общие стили для всех кнопок */
+      background-color: var(--button-color); /* Цвет из переменной */
+      color: white;                 /* Белый текст */
+      font-size: 1.2rem;            /* Размер шрифта */
+      font-weight: bold;            /* Жирный шрифт */
+      padding: 15px;               /* Внутренние отступы */
+      width: 80px;                 /* Фиксированная ширина */
+      height: 25px;                /* Фиксированная высота */
+      border: none;                /* Убираем границу */
+      border-radius: 8px;          /* Закругленные углы */
+      cursor: pointer;             /* Курсор-указатель при наведении */
+      transition: background 0.3s, transform 0.2s; /* Плавные анимации */
+      justify-content: center;     /* Центрирование по горизонтали */
+      align-items: center;         /* Центрирование по вертикали */
+      white-space: nowrap;
+    }
+
+    button:hover {
+      /* Стили при наведении на кнопку */
+      background-color: var(--button-hover); /* Цвет из переменной */
+    }
+
+    .square-buttons button {
+      /* Стили для кнопок с квадратными углами */
+      border-radius: 0 !important;  /* Убираем закругления (important переопределяет другие стили) */
+    }
+
+    #history {
+      color: #ccc;
+      margin-bottom: 10px;
+      min-height: 20px;
+      font-size: 1rem;
+    }
+
+    .footer {
+      /* Стили для подвала */
+      margin-top: 15px;             /* Отступ сверху */
+      font-size: 0.9rem;            /* Мелкий шрифт */
+      opacity: 0.8;                /* Немного прозрачный */
+    }
+
+    .theme-toggle button {
+      /* Специальные стили для кнопки смены темы */
+      padding: 16px 60px;          /* Большие отступы */
+      font-size: 1.2rem;           /* Размер шрифта */
+      white-space: nowrap;         /* Запрет переноса текста */
+      display: flex;               /* Flex-контейнер */
+      justify-content: center;     /* Центрирование по горизонтали */
+      align-items: center;         /* Центрирование по вертикали */
+      width: 100%;                /* На всю доступную ширину */
+    }
+
+    .dropdown {
+      /* Стили для выпадающего списка */
+      margin-top: 10px;            /* Отступ сверху */
+    }
+
+    .details {
+      /* Стили для блока с деталями */
+      margin-top: 10px;            /* Отступ сверху */
+    }
+
+    mark {
+      /* Стили для выделенного текста */
+      background: yellow;          /* Желтый фон */
+      color: black;                /* Черный текст */
+    }
+
+    .bg-image {
+      /* Стили для фонового изображения */
+      background-image: url('https://source.unsplash.com/300x300/?math'); /* URL изображения */
+      background-size: cover;      /* Растягиваем на весь блок */
+      background-position: center; /* Центрируем изображение */
+    }
+  </style>
+</head>
+<body>
+  <!-- Начало тела документа -->
+
+  <div class="calculator bg-image">
+    <!-- Основной блок калькулятора с двумя классами -->
+    <div id="history"></div>
+    <div id="result">0</div>
+    <!-- Блок для вывода результата (по умолчанию 0) -->
+
+    <!-- Далее идут ряды кнопок калькулятора -->
+    <div class="row square-buttons">
+      <button id="btn_op_clear">C</button>       <!-- Кнопка очистки -->
+      <button id="btn_op_sign">+/-</button>      <!-- Смена знака -->
+      <button id="btn_op_percent">%</button>     <!-- Процент -->
+      <button id="btn_op_div">/</button>         <!-- Деление -->
+      <button id="btn_op_backspace">←</button>   <!-- Кнопка "назад" (удаление последнего символа) -->
+      
+    </div>
+
+    <div class="row square-buttons">
+      <button id="btn_digit_7">7</button>        <!-- Цифра 7 -->
+      <button id="btn_digit_8">8</button>        <!-- Цифра 8 -->
+      <button id="btn_digit_9">9</button>        <!-- Цифра 9 -->
+      <button id="btn_op_mult">x</button>        <!-- Умножение -->
+      <button id="btn_op_square">x²</button>   <!-- Квадрат числа -->
+    </div>
+
+    <div class="row square-buttons">
+      <button id="btn_digit_4">4</button>        <!-- Цифра 4 -->
+      <button id="btn_digit_5">5</button>        <!-- Цифра 5 -->
+      <button id="btn_digit_6">6</button>        <!-- Цифра 6 -->
+      <button id="btn_op_minus">-</button>       <!-- Вычитание -->
+      <button id="btn_op_cube">x³</button>     <!-- Куб числа -->
+    </div>
+
+    <div class="row square-buttons">
+      <button id="btn_digit_1">1</button>        <!-- Цифра 1 -->
+      <button id="btn_digit_2">2</button>        <!-- Цифра 2 -->
+      <button id="btn_digit_3">3</button>        <!-- Цифра 3 -->
+      <button id="btn_op_plus">+</button>       <!-- Сложение -->
+      <button id="btn_op_factorial">x!</button>
+    </div>
+
+    <div class="row square-buttons">
+      <button id="btn_digit_0">0</button>        <!-- Цифра 0 -->
+      <button id="btn_op_triplezero">000</button> <!-- Добавление трех нулей -->
+      <button id="btn_digit_dot">.</button>      <!-- Десятичная точка -->
+      <button id="btn_op_equal">=</button>       <!-- Равно -->
+      <button id="btn_op_sqrt">√</button>        <!-- Квадратный корень -->
+    </div>
+    <div class="row square-buttons">
+      <button2 id="btn_op_bgcolor">BG Color</button2>
+      <button2 id="btn_op_resultcolor">TXT Color</button2>
+      <button2 id="btn_op_accum_sub">Accum-</button2>
+      <button2 id="btn_op_accum_add">Accum+</button2> <!-- Накопление суммы -->
+    </div>
+
+    <div class="theme-toggle">
+      <!-- Блок для кнопки смены темы -->
+      <button onclick="toggleTheme()">Сменить тему</button>
+      <!-- Кнопка с обработчиком события onclick -->
+    </div>
+
+    <div class="dropdown">
+      <!-- Блок выпадающего списка -->
+      <label for="mode">Режим:</label>           <!-- Подпись -->
+      <select id="mode">                         <!-- Сам список -->
+        <option>Обычный</option>                 <!-- Пункт 1 -->
+        <option>Научный</option>                <!-- Пункт 2 -->
+        <option>Инженерный</option>             <!-- Пункт 3 -->
+      </select>
+    </div>
+
+    <div class="details">
+      <!-- Блок с деталями (раскрывающийся) -->
+      <details>
+        <summary>Автор → Номоконов Владислав Анатольевич, Группа ИУ5-43Б</summary>
+        Лабораторная работа №1 по HTML и CSS
+      </details>
+    </div>
+    
+    <div id="history" class="history"></div>
+
+    <div class="footer">
+      <!-- Подвал 2 с ссылкой -->
+      <a href="https://github.com/Seregapirat15/js-network-apps/tree/main" target="_blank">Код на GitHub</a>
+      <!-- Ссылка откроется в новой вкладке (target="_blank") -->
+    </div>
+
+    <p>
+      <!-- Параграф с выделенными словами -->
+      <mark>знакомство</mark>, <mark>HTML</mark>, <mark>CSS</mark>
+    </p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
