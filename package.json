@@ -1,5 +1,5 @@
 {
-  "name": "untitled1",
+  "name": "js-network-apps",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -8,5 +8,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Seregapirat15/js-network-apps.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Seregapirat15/js-network-apps/issues"
+  },
+  "homepage": "https://github.com/Seregapirat15/js-network-apps#readme",
+  "description": "",
+  "dependencies": {
+    "bootstrap": "^5.3.6"
+  }
 }
