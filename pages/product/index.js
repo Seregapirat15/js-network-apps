@@ -3,26 +3,26 @@ export class ProductPage {
         this.products = [
             {
                 id: 1,
-                name: "Laptop Pro",
+                name: "MacBook Pro",
                 description: "High-performance laptop for professionals",
                 price: 1299.99,
-                image: "https://picsum.photos/300/200?random=1",
+                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80",
                 details: "15.6-inch 4K display, Intel Core i9, 32GB RAM, 1TB SSD"
             },
             {
                 id: 2,
-                name: "Smartphone X",
+                name: "Iphone 15",
                 description: "Latest smartphone with advanced features",
                 price: 799.99,
-                image: "https://picsum.photos/300/200?random=2",
+                image: "https://avatars.mds.yandex.net/i?id=326fb1d566045e2168b621d69a6d31a7_l-5221896-images-thumbs&n=13",
                 details: "6.7-inch OLED display, 5G capable, 256GB storage"
             },
             {
                 id: 3,
-                name: "Wireless Headphones",
+                name: "audiotechnica at-m50x",
                 description: "Premium noise-canceling headphones",
-                price: 249.99,
-                image: "https://picsum.photos/300/200?random=3",
+                price: 749.99,
+                image: "https://avatars.mds.yandex.net/i?id=65361de8a41e42222804d07db78f39eb_l-5235360-images-thumbs&n=13",
                 details: "40-hour battery life, Active Noise Cancellation, Bluetooth 5.0"
             }
         ];
