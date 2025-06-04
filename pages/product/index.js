@@ -27,7 +27,7 @@ export class ProductPage {
             }
         ];
     }
-т
+
     getProduct(id) {
         return this.products.find(p => p.id === parseInt(id));
     }
@@ -57,16 +57,23 @@ export class ProductPage {
                             <p class="card-text">${product.description}</p>
                             <p class="card-text"><small class="text-muted">${product.details}</small></p>
                             <p class="card-text"><strong>Price: $${product.price}</strong></p>
-                            <button class="btn btn-primary" id="backButton">Back to Products</button>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-primary" id="backButton">Back to Products</button>
+                                <button class="btn btn-info text-white" id="specsButton">Specifications</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
 
-        // Add event listener for back button
+        // Add event listeners
         document.getElementById('backButton').addEventListener('click', () => {
             window.location.hash = '';
+        });
+
+        document.getElementById('specsButton').addEventListener('click', () => {
+            window.location.hash = `#specifications/${productId}`;
         });
     }
 }

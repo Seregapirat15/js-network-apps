@@ -100,7 +100,7 @@ export class MainPage {
         carousel.className = 'carousel slide mb-4';
         carousel.id = 'productCarousel';
         carousel.setAttribute('data-bs-ride', 'carousel');
-        carousel.setAttribute('data-bs-interval', '3000'); // Интервал автопрокрутки в миллисекундах
+        carousel.setAttribute('data-bs-interval', '3000');
 
         // Создаем индикаторы
         const indicators = document.createElement('div');
@@ -110,15 +110,8 @@ export class MainPage {
         const carouselInner = document.createElement('div');
         carouselInner.className = 'carousel-inner';
 
-        // Группируем продукты по 3 в слайде
-        const productsPerSlide = 3;
-        const slides = [];
-        
-        for (let i = 0; i < this.products.length; i += productsPerSlide) {
-            slides.push(this.products.slice(i, i + productsPerSlide));
-        }
-
-        slides.forEach((slideProducts, index) => {
+        // Создаем слайд для каждого продукта
+        this.products.forEach((product, index) => {
             // Индикатор
             const button = document.createElement('button');
             button.setAttribute('type', 'button');
@@ -135,29 +128,41 @@ export class MainPage {
             const slide = document.createElement('div');
             slide.className = `carousel-item ${index === 0 ? 'active' : ''}`;
             
+            // Контейнер для изображения и названия
             const slideContent = document.createElement('div');
-            slideContent.className = 'd-flex justify-content-around align-items-center';
-            slideContent.style.minHeight = '450px';
-            slideContent.style.padding = '20px';
+            slideContent.className = 'position-relative mx-auto';
+            slideContent.style.height = '400px'; // Уменьшаем высоту
+            slideContent.style.maxWidth = '800px'; // Ограничиваем максимальную ширину
 
-            slideProducts.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'card h-100';
-                productCard.style.width = '18rem';
-                productCard.style.margin = '0 10px';
-                productCard.innerHTML = `
-                    <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${product.name}</h5>
-                        <p class="card-text flex-grow-1">${product.description}</p>
-                        <p class="card-text"><strong>$${product.price}</strong></p>
-                        <a href="#product/${product.id}" class="btn btn-primary mt-auto">View Details</a>
-                    </div>
-                `;
-                slideContent.appendChild(productCard);
-            });
+            // Изображение
+            const image = document.createElement('img');
+            image.src = product.image;
+            image.className = 'w-100 h-100';
+            image.style.objectFit = 'cover';
+            image.style.borderRadius = '8px'; // Добавляем скругление углов
+            image.alt = product.name;
 
-            slide.appendChild(slideContent);
+            // Оверлей с названием
+            const overlay = document.createElement('div');
+            overlay.className = 'position-absolute bottom-0 w-100 p-4';
+            overlay.style.background = 'linear-gradient(transparent, rgba(0,0,0,0.8))';
+            overlay.style.borderRadius = '0 0 8px 8px'; // Скругление для оверлея
+            
+            const productName = document.createElement('h2');
+            productName.className = 'text-white mb-0';
+            productName.textContent = product.name;
+            
+            overlay.appendChild(productName);
+            slideContent.appendChild(image);
+            slideContent.appendChild(overlay);
+            
+            // Добавляем ссылку на страницу продукта
+            const link = document.createElement('a');
+            link.href = `#product/${product.id}`;
+            link.style.textDecoration = 'none';
+            link.appendChild(slideContent);
+            
+            slide.appendChild(link);
             carouselInner.appendChild(slide);
         });
 
@@ -186,15 +191,6 @@ export class MainPage {
         carousel.appendChild(carouselInner);
         carousel.appendChild(prevButton);
         carousel.appendChild(nextButton);
-
-        // Инициализация карусели после добавления в DOM
-        setTimeout(() => {
-            new bootstrap.Carousel(carousel, {
-                interval: 3000,
-                ride: 'carousel',
-                wrap: true
-            });
-        }, 0);
 
         return carousel;
     }

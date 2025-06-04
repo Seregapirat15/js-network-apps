@@ -1,10 +1,12 @@
 import { MainPage } from './pages/main/index.js';
 import { ProductPage } from './pages/product/index.js';
+import { SpecificationsPage } from './pages/specifications/index.js';
 
 class Router {
     constructor() {
         this.mainPage = new MainPage();
         this.productPage = new ProductPage();
+        this.specificationsPage = new SpecificationsPage();
         
         // Initialize routing
         this.handleRoute();
@@ -19,7 +21,10 @@ class Router {
     handleRoute() {
         const hash = window.location.hash;
         
-        if (hash.startsWith('#product/')) {
+        if (hash.startsWith('#specifications/')) {
+            const productId = hash.split('/')[1];
+            this.specificationsPage.render(productId);
+        } else if (hash.startsWith('#product/')) {
             const productId = hash.split('/')[1];
             this.productPage.render(productId);
         } else {
