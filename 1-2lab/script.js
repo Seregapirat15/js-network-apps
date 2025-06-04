@@ -6,8 +6,8 @@ window.onload = function() {
   let shouldResetScreen = false;
   let accumulatedValue = 0;
   let darkMode = true;
-  let fullHistory = '';
-  let isNewCalculation = true;
+  let expression = ''; // Строка для хранения текущего выражения
+  let lastInputType = null; // 'number', 'operator', или null
 
   // Получаем элементы интерфейса
   const outputElement = document.getElementById("result");
@@ -41,28 +41,41 @@ window.onload = function() {
     outputElement.textContent = value;
   }
 
+  // Функция для обновления истории
+  function updateHistory() {
+    historyElement.textContent = expression;
+  }
+
   // Добавляем цифру или точку
   function appendDigit(digit) {
-    if (outputElement.textContent === '0' || shouldResetScreen) {
+    if (shouldResetScreen) {
       resetScreen();
     }
     
     if (digit === '.' && outputElement.textContent.includes('.')) return;
 
-    outputElement.textContent += digit;
-    
-    // Обновляем историю только если это не начало нового вычисления
-    if (!isNewCalculation) {
-      updateHistory(digit);
-    } else {
-      // Если это начало нового вычисления, сбрасываем историю и добавляем цифру
-      fullHistory = digit;
-      historyElement.textContent = fullHistory;
-      isNewCalculation = false;
+    // Если последний ввод был оператор, добавляем пробел перед числом
+    if (lastInputType === 'operator') {
+      expression += ' ';
     }
+
+    if (outputElement.textContent === '0' && digit !== '.') {
+      outputElement.textContent = digit;
+      if (expression === '') {
+        expression = digit;
+      } else {
+        expression += digit;
+      }
+    } else {
+      outputElement.textContent += digit;
+      expression += digit;
+    }
+
+    lastInputType = 'number';
+    updateHistory();
   }
 
-  // Сброс экрана (но не памяти)
+  // Сброс экрана
   function resetScreen() {
     outputElement.textContent = '';
     shouldResetScreen = false;
@@ -74,152 +87,37 @@ window.onload = function() {
     secondOperand = '';
     currentOperation = null;
     accumulatedValue = 0;
-    fullHistory = '';
-    isNewCalculation = true;
+    expression = '';
+    lastInputType = null;
     updateDisplay('0');
-    historyElement.textContent = '';
+    updateHistory();
   }
 
-  // 1. Операция смены знака +/-
-  function changeSign() {
+  // Обработка операций
+  function handleOperation(operation) {
     const currentValue = outputElement.textContent;
-    if (currentValue === '0') return;
-    if (currentValue.startsWith('-')) {
-      updateDisplay(currentValue.substring(1));
-    } else {
-      updateDisplay('-' + currentValue);
-    }
-  }
 
-  // 2. Операция вычисления процента %
-  function calculatePercent() {
-    const currentValue = parseFloat(outputElement.textContent);
-    updateDisplay((currentValue / 100).toString());
-  }
+    if (currentOperation !== null && lastInputType === 'number') {
+      // Если уже есть операция и введено число, выполняем промежуточное вычисление
+      calculate(false);
+    }
 
-  // 3. Стирание последней цифры (backspace)
-  function backspace() {
-    if (outputElement.textContent.length === 1 || 
-        (outputElement.textContent.length === 2 && outputElement.textContent.startsWith('-'))) {
-      updateDisplay('0');
-    } else {
-      updateDisplay(outputElement.textContent.slice(0, -1));
-    }
-    
-    // Удаляем последний символ из истории, если это цифра
-    if (!isNewCalculation && fullHistory.length > 0) {
-      fullHistory = fullHistory.slice(0, -1);
-      historyElement.textContent = fullHistory;
-    }
-  }
-
-// 5. Операция вычисления квадратного корня √
-function squareRoot() {
-    const currentValue = parseFloat(outputElement.textContent);
-    if (currentValue < 0) {
-        alert("Ошибка: нельзя извлечь корень из отрицательного числа!");
-        return;
-    }
-    const result = Math.sqrt(currentValue);
-    updateDisplay(result.toString());
+    firstOperand = outputElement.textContent;
+    currentOperation = operation;
     shouldResetScreen = true;
-    
-    // Очищаем историю и добавляем запись вида sqrt(число)=результат
-    fullHistory = `sqrt(${currentValue})=${result}`;
-    historyElement.textContent = fullHistory;
-    isNewCalculation = true;
-}
 
-// 6. Операция возведения в квадрат x²
-function square() {
-    const currentValue = parseFloat(outputElement.textContent);
-    const result = currentValue * currentValue;
-    updateDisplay(result.toString());
-    shouldResetScreen = true;
-    
-    // Очищаем историю и добавляем запись вида (число)^2=результат
-    fullHistory = `(${currentValue})^2=${result}`;
-    historyElement.textContent = fullHistory;
-    isNewCalculation = true;
-}
-
-// 7. Операция вычисления факториала x!
-function factorial() {
-    let currentValue = parseInt(outputElement.textContent);
-    if (currentValue < 0) {
-        alert("Ошибка: факториал отрицательного числа не определен!");
-        return;
-    }
-    if (currentValue > 20) {
-        alert("Ошибка: число слишком большое для точного вычисления факториала!");
-        return;
+    // Добавляем пробел перед оператором, если последний ввод был число
+    if (lastInputType === 'number') {
+      expression += ' ';
     }
     
-    let result = 1;
-    for (let i = 2; i <= currentValue; i++) {
-        result *= i;
-    }
-    updateDisplay(result.toString());
-    shouldResetScreen = true;
-    
-    // Очищаем историю и добавляем запись вида число!=результат
-    fullHistory = `${currentValue}!=${result}`;
-    historyElement.textContent = fullHistory;
-    isNewCalculation = true;
-}
-
-  // 8. Добавление трех нулей (000)
-  function addTripleZero() {
-    if (outputElement.textContent === '0' || shouldResetScreen) {
-      resetScreen();
-    }
-    outputElement.textContent += '000';
-    
-    // Обновляем историю только если это не начало нового вычисления
-    if (!isNewCalculation) {
-      updateHistory('000');
-    } else {
-      fullHistory = '000';
-      historyElement.textContent = fullHistory;
-      isNewCalculation = false;
-    }
+    expression += operation;
+    lastInputType = 'operator';
+    updateHistory();
   }
-
-  // 9. Накапливаемое сложение
-  function accumulateAddition() {
-    const currentValue = parseFloat(outputElement.textContent);
-    accumulatedValue += currentValue;
-    updateDisplay(accumulatedValue.toString());
-    shouldResetScreen = true;
-    // Не обновляем историю для накапливаемых операций
-    isNewCalculation = true;
-  }
-
-  // 10. Накапливаемое вычитание
-  function accumulateSubtraction() {
-    const currentValue = parseFloat(outputElement.textContent);
-    accumulatedValue -= currentValue;
-    updateDisplay(accumulatedValue.toString());
-    shouldResetScreen = true;
-    // Не обновляем историю для накапливаемых операций
-    isNewCalculation = true;
-  }
-
-// 12. Индивидуальная операция: x^3 (возведение в куб)
-function cube() {
-    const currentValue = parseFloat(outputElement.textContent);
-    const result = currentValue ** 3;
-    updateDisplay(result.toString());
-    shouldResetScreen = true;
-    
-    // Очищаем историю и добавляем запись вида (число)^3=результат
-    fullHistory = `(${currentValue})^3=${result}`;
-    historyElement.textContent = fullHistory;
-    isNewCalculation = true;
-}
 
   // Вычисление результата
-  function calculate() {
+  function calculate(showEquals = true) {
     if (currentOperation === null || shouldResetScreen) return;
 
     if (currentOperation === '/' && outputElement.textContent === '0') {
@@ -244,12 +142,164 @@ function cube() {
     result = Math.round(result * 1000000) / 1000000;
     updateDisplay(result);
     
-    // Добавляем знак равенства и результат в историю
-    updateHistory(' = ' + result);
+    if (showEquals) {
+      // Добавляем знак равенства и результат только при явном нажатии =
+      expression += ' = ' + result;
+      updateHistory();
+      // Сбрасываем выражение для нового вычисления
+      expression = '';
+      lastInputType = null;
+    } else {
+      // При промежуточных вычислениях обновляем firstOperand
+      firstOperand = result.toString();
+    }
     
     currentOperation = null;
-    firstOperand = result.toString();
-    isNewCalculation = true; // Начинаем новое вычисление после нажатия =
+    shouldResetScreen = true;
+  }
+
+  // 1. Операция смены знака +/-
+  function changeSign() {
+    const currentValue = outputElement.textContent;
+    if (currentValue === '0') return;
+    
+    if (currentValue.startsWith('-')) {
+      updateDisplay(currentValue.substring(1));
+      // Обновляем последнее число в выражении
+      expression = expression.replace(/-?\d+(\.\d+)?$/, currentValue.substring(1));
+    } else {
+      updateDisplay('-' + currentValue);
+      // Обновляем последнее число в выражении
+      expression = expression.replace(/\d+(\.\d+)?$/, '-' + currentValue);
+    }
+    updateHistory();
+  }
+
+  // 2. Операция вычисления процента %
+  function calculatePercent() {
+    const currentValue = parseFloat(outputElement.textContent);
+    const result = currentValue / 100;
+    updateDisplay(result.toString());
+    // Обновляем последнее число в выражении
+    expression = expression.replace(/\d+(\.\d+)?$/, result);
+    updateHistory();
+  }
+
+  // 3. Стирание последней цифры (backspace)
+  function backspace() {
+    if (outputElement.textContent.length === 1 || 
+        (outputElement.textContent.length === 2 && outputElement.textContent.startsWith('-'))) {
+      updateDisplay('0');
+      if (expression.length > 0) {
+        expression = expression.slice(0, -1);
+      }
+    } else {
+      updateDisplay(outputElement.textContent.slice(0, -1));
+      if (expression.length > 0) {
+        expression = expression.slice(0, -1);
+      }
+    }
+    updateHistory();
+  }
+
+  // 5. Операция вычисления квадратного корня √
+  function squareRoot() {
+    const currentValue = parseFloat(outputElement.textContent);
+    if (currentValue < 0) {
+      alert("Ошибка: нельзя извлечь корень из отрицательного числа!");
+      return;
+    }
+    const result = Math.sqrt(currentValue);
+    updateDisplay(result.toString());
+    shouldResetScreen = true;
+    
+    // Очищаем историю и добавляем запись вида sqrt(число)=результат
+    expression = `sqrt(${currentValue})=${result}`;
+    updateHistory();
+  }
+
+  // 6. Операция возведения в квадрат x²
+  function square() {
+    const currentValue = parseFloat(outputElement.textContent);
+    const result = currentValue * currentValue;
+    updateDisplay(result.toString());
+    shouldResetScreen = true;
+    
+    // Очищаем историю и добавляем запись вида (число)^2=результат
+    expression = `(${currentValue})^2=${result}`;
+    updateHistory();
+  }
+
+  // 7. Операция вычисления факториала x!
+  function factorial() {
+    let currentValue = parseInt(outputElement.textContent);
+    if (currentValue < 0) {
+      alert("Ошибка: факториал отрицательного числа не определен!");
+      return;
+    }
+    if (currentValue > 20) {
+      alert("Ошибка: число слишком большое для точного вычисления факториала!");
+      return;
+    }
+    
+    let result = 1;
+    for (let i = 2; i <= currentValue; i++) {
+      result *= i;
+    }
+    updateDisplay(result.toString());
+    shouldResetScreen = true;
+    
+    // Очищаем историю и добавляем запись вида число!=результат
+    expression = `${currentValue}!=${result}`;
+    updateHistory();
+  }
+
+  // 8. Добавление трех нулей (000)
+  function addTripleZero() {
+    if (outputElement.textContent === '0' || shouldResetScreen) {
+      resetScreen();
+    }
+    outputElement.textContent += '000';
+    
+    // Обновляем историю только если это не начало нового вычисления
+    if (lastInputType !== 'operator') {
+      expression += ' 000';
+      updateHistory();
+    }
+  }
+
+  // 9. Накапливаемое сложение
+  function accumulateAddition() {
+    const currentValue = parseFloat(outputElement.textContent);
+    accumulatedValue += currentValue;
+    updateDisplay(accumulatedValue.toString());
+    shouldResetScreen = true;
+    // Не обновляем историю для накапливаемых операций
+    expression = accumulatedValue.toString();
+    lastInputType = 'number';
+  }
+
+  // 10. Накапливаемое вычитание
+  function accumulateSubtraction() {
+    const currentValue = parseFloat(outputElement.textContent);
+    accumulatedValue -= currentValue;
+    updateDisplay(accumulatedValue.toString());
+    shouldResetScreen = true;
+    // Не обновляем историю для накапливаемых операций
+    expression = accumulatedValue.toString();
+    lastInputType = 'number';
+  }
+
+  // 12. Индивидуальная операция: x^3 (возведение в куб)
+  function cube() {
+    const currentValue = parseFloat(outputElement.textContent);
+    const result = currentValue ** 3;
+    updateDisplay(result.toString());
+    shouldResetScreen = true;
+    
+    // Очищаем историю и добавляем запись вида (число)^3=результат
+    expression = `(${currentValue})^3=${result}`;
+    updateHistory();
   }
 
   // 4. Смена цвета фона калькулятора
@@ -289,43 +339,16 @@ function cube() {
     // Не обновляем историю для смены темы
   }
 
-  function updateHistory(text) {
-    fullHistory += text;
-    historyElement.textContent = fullHistory;
-  }
-
-  // Обработка нажатия цифровых кнопок
+  // Обработчики событий
   digitButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      appendDigit(button.textContent);
-    });
+    button.addEventListener('click', () => appendDigit(button.textContent));
   });
 
-  // Обработка нажатия кнопок операций
   operationButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      if (currentOperation !== null && !shouldResetScreen) calculate();
-      firstOperand = outputElement.textContent;
-      currentOperation = button.textContent;
-      shouldResetScreen = true;
-      
-      // Если это начало нового вычисления, устанавливаем историю равной текущему числу
-      if (isNewCalculation) {
-        fullHistory = firstOperand;
-        isNewCalculation = false;
-      }
-      
-      // Добавляем операцию в историю
-      updateHistory(' ' + currentOperation + ' ');
-    });
+    button.addEventListener('click', () => handleOperation(button.textContent));
   });
 
-  // Назначение обработчиков для кнопок
-  equalsButton.addEventListener('click', () => {
-    calculate();
-    shouldResetScreen = true;
-  });
-
+  equalsButton.addEventListener('click', () => calculate(true));
   clearButton.addEventListener('click', clearAll);
   signButton.addEventListener('click', changeSign);
   percentButton.addEventListener('click', calculatePercent);

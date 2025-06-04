@@ -5,7 +5,7 @@ export function createProductCard(product, onDelete) {
 
     card.innerHTML = `
         <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-        <div class="card-body">
+                <div class="card-body">
             <h5 class="card-title">${product.name}</h5>
             <p class="card-text">${product.description}</p>
             <p class="card-text"><strong>Price: $${product.price}</strong></p>

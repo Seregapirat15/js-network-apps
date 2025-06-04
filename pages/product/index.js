@@ -27,7 +27,7 @@ export class ProductPage {
             }
         ];
     }
-
+т
     getProduct(id) {
         return this.products.find(p => p.id === parseInt(id));
     }
