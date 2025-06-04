@@ -1,61 +1,98 @@
-import { ProductCardComponent } from "../../components/product-card/index.js";
+import { createProductCard } from '../../components/product-card/index.js';
 
 export class MainPage {
-  constructor(parent) {
-    this.parent = parent; // Родительский элемент (например, document.getElementById("app"))
-  }
+    constructor() {
+        this.products = [
+            {
+                id: 1,
+                name: "Laptop Pro",
+                description: "High-performance laptop for professionals",
+                price: 1299.99,
+                image: "https://picsum.photos/300/200?random=1"
+            },
+            {
+                id: 2,
+                name: "Smartphone X",
+                description: "Latest smartphone with advanced features",
+                price: 799.99,
+                image: "https://picsum.photos/300/200?random=2"
+            },
+            {
+                id: 3,
+                name: "Wireless Headphones",
+                description: "Premium noise-canceling headphones",
+                price: 249.99,
+                image: "https://picsum.photos/300/200?random=3"
+            }
+        ];
+    }
 
-  // Геттер для доступа к контейнеру карточек
-  get pageRoot() {
-    return document.getElementById('main-page');
-  }
+    deleteProduct(id) {
+        this.products = this.products.filter(p => p.id !== id);
+        this.render(); // Re-render the page
+    }
 
-  // Метод для получения данных (теперь возвращает массив)
-  clickCard(e) {
-    const cardId = e.target.dataset.id; // Получаем ID из data-атрибута
-    console.log(`Кликнули на карточку с ID: ${cardId}`);
-    // Здесь можно добавить логику (например, открыть детали товара)
-  }
-  getData() {
-    return [
-      {
-        id: 1,
-        src: "https://i.pinimg.com/originals/c9/ea/65/c9ea654eb3a7398b1f702c758c1c4206.jpg",
-        title: "Акция 1",
-        text: "Такой акции вы еще не видели 1"
-      },
-      {
-        id: 2,
-        src: "https://i.pinimg.com/originals/c9/ea/65/c9ea654eb3a7398b1f702c758c1c4206.jpg",
-        title: "Акция 2",
-        text: "Такой акции вы еще не видели 2"
-      },
-      {
-        id: 3,
-        src: "https://i.pinimg.com/originals/c9/ea/65/c9ea654eb3a7398b1f702c758c1c4206.jpg",
-        title: "Акция 3",
-        text: "Такой акции вы еще не видели 3"
-      }
-    ];
-  }
+    addNewProduct() {
+        const newProduct = { ...this.products[0] };
+        newProduct.id = Math.max(...this.products.map(p => p.id)) + 1;
+        this.products.push(newProduct);
+        this.render();
+    }
 
-  // Метод для генерации HTML-разметки страницы
-  getHTML() {
-    return `
-      <div id="main-page" class="d-flex flex-wrap gap-3 p-3"></div>
-    `;
-  }
+    filterProducts(searchTerm) {
+        return this.products.filter(product => 
+            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }
 
-  // Главный метод рендеринга
-  render() {
-    this.parent.innerHTML = ''; // Очищаем контейнер
-    const html = this.getHTML();
-    this.parent.insertAdjacentHTML('beforeend', html); // Вставляем разметку
+    render() {
+        const app = document.getElementById('app');
+        app.innerHTML = '';
 
-    const data = this.getData(); // Получаем массив данных
-    data.forEach(item => {
-      const productCard = new ProductCardComponent(this.pageRoot); // Создаем карточку
-      productCard.render(item); // Рендерим с данными
-    });
-  }
+        // Search and Add Product controls
+        const controls = document.createElement('div');
+        controls.className = 'mb-4';
+        controls.innerHTML = `
+            <div class="row">
+                <div class="col">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-success" id="addProductBtn">Add New Product</button>
+                </div>
+            </div>
+        `;
+        app.appendChild(controls);
+
+        // Products container
+        const productsContainer = document.createElement('div');
+        productsContainer.className = 'row row-cols-1 row-cols-md-3 g-4';
+        app.appendChild(productsContainer);
+
+        // Add event listeners
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const filteredProducts = this.filterProducts(e.target.value);
+            this.renderProducts(filteredProducts);
+        });
+
+        const addBtn = document.getElementById('addProductBtn');
+        addBtn.addEventListener('click', () => this.addNewProduct());
+
+        // Initial render of products
+        this.renderProducts(this.products);
+    }
+
+    renderProducts(products) {
+        const container = document.querySelector('.row-cols-md-3');
+        container.innerHTML = '';
+        
+        products.forEach(product => {
+            const col = document.createElement('div');
+            col.className = 'col';
+            col.appendChild(createProductCard(product, (id) => this.deleteProduct(id)));
+            container.appendChild(col);
+        });
+    }
 }

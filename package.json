@@ -1,9 +1,10 @@
 {
   "name": "js-network-apps",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Product catalog web application",
+  "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "http-server -p 3000 --cors -c-1"
   },
   "keywords": [],
   "author": "",
@@ -16,8 +17,11 @@
     "url": "https://github.com/Seregapirat15/js-network-apps/issues"
   },
   "homepage": "https://github.com/Seregapirat15/js-network-apps#readme",
-  "description": "",
   "dependencies": {
-    "bootstrap": "^5.3.6"
+    "bootstrap": "^5.3.0",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
   }
 }
