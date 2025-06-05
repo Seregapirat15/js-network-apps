@@ -2,96 +2,66 @@ import { createProductCard } from '../../components/product-card/index.js';
 
 export class MainPage {
     constructor() {
-        this.products = [
-      {
-        id: 1,
-                name: "MacBook Pro",
-                description: "High-performance laptop for professionals",
-                price: 1299.99,
-                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80"
-      },
-      {
-        id: 2,
-                name: "Iphone 15",
-                description: "Latest smartphone with advanced features",
-                price: 799.99,
-                image: "https://avatars.mds.yandex.net/i?id=326fb1d566045e2168b621d69a6d31a7_l-5221896-images-thumbs&n=13"
-      },
-      {
-        id: 3,
-                name: "audiotechnica at-m50x",
-                description: "Premium noise-canceling headphones",
-                price: 749.99,
-                image: "https://avatars.mds.yandex.net/i?id=65361de8a41e42222804d07db78f39eb_l-5235360-images-thumbs&n=13"
-            },
-            {
-                id: 4,
-                name: "iPad Pro",
-                description: "Powerful tablet for creative professionals",
-                price: 999.99,
-                image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80"
-            },
-            {
-                id: 5,
-                name: "Apple Watch Series 8",
-                description: "Advanced health monitoring and fitness tracking",
-                price: 399.99,
-                image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=500&q=80"
-            },
-            {
-                id: 6,
-                name: "Sony WH-1000XM4",
-                description: "Premium wireless noise-canceling headphones",
-                price: 349.99,
-                image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80"
-            },
-            {
-                id: 7,
-                name: "Dell XPS 13",
-                description: "Ultra-portable premium laptop",
-                price: 1199.99,
-                image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&q=80"
-            },
-            {
-                id: 8,
-                name: "AirPods Pro",
-                description: "Wireless earbuds with active noise cancellation",
-                price: 249.99,
-                image: "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500&q=80"
-            },
-            {
-                id: 9,
-                name: "Gaming Mouse",
-                description: "High-precision gaming mouse",
-                price: 79.99,
-                image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500&q=80"
-            },
-            {
-                id: 10,
-                name: "Mechanical Keyboard",
-                description: "RGB mechanical gaming keyboard",
-                price: 159.99,
-                image: "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=500&q=80"
+        this.products = [];
+    }
+
+    async fetchProducts() {
+        try {
+            const response = await fetch('http://localhost:3001/api/products');
+            this.products = await response.json();
+            return this.products;
+        } catch (error) {
+            console.error('Error fetching products:', error);
+            return [];
+        }
+    }
+
+    async deleteProduct(id) {
+        try {
+            const response = await fetch(`http://localhost:3001/api/products/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                this.products = this.products.filter(p => p.id !== id);
+                this.render(); // Re-render the page
             }
-        ];
+        } catch (error) {
+            console.error('Error deleting product:', error);
+        }
     }
 
-    deleteProduct(id) {
-        this.products = this.products.filter(p => p.id !== id);
-        this.render(); // Re-render the page
-    }
+    async addNewProduct() {
+        try {
+            const newProduct = {
+                name: "New Product",
+                price: 99.99,
+                category: "Electronics",
+                description: "New product description",
+                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80"
+            };
 
-    addNewProduct() {
-        const newProduct = { ...this.products[0] };
-        newProduct.id = Math.max(...this.products.map(p => p.id)) + 1;
-        this.products.push(newProduct);
-        this.render();
+            const response = await fetch('http://localhost:3001/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newProduct)
+            });
+
+            if (response.ok) {
+                const addedProduct = await response.json();
+                this.products.push(addedProduct);
+                this.render();
+            }
+        } catch (error) {
+            console.error('Error adding product:', error);
+        }
     }
 
     filterProducts(searchTerm) {
         return this.products.filter(product => 
             product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.description.toLowerCase().includes(searchTerm.toLowerCase())
+            product.description?.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }
 
@@ -136,7 +106,7 @@ export class MainPage {
 
             // Изображение
             const image = document.createElement('img');
-            image.src = product.image;
+            image.src = product.image || 'https://via.placeholder.com/800x400';
             image.className = 'w-100 h-100';
             image.style.objectFit = 'cover';
             image.style.borderRadius = '8px'; // Добавляем скругление углов
@@ -195,7 +165,8 @@ export class MainPage {
         return carousel;
     }
 
-  render() {
+    async render() {
+        await this.fetchProducts();
         const app = document.getElementById('app');
         app.innerHTML = '';
 
@@ -250,6 +221,6 @@ export class MainPage {
             col.className = 'col';
             col.appendChild(createProductCard(product, (id) => this.deleteProduct(id)));
             container.appendChild(col);
-    });
-  }
+        });
+    }
 }

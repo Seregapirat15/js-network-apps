@@ -1,65 +1,73 @@
 export class SpecificationsPage {
     constructor() {
-        this.products = [
-            {
-                id: 1,
-                name: "MacBook Pro",
-                specifications: {
-                    processor: "Apple M2 Pro/Max",
-                    ram: "Up to 96GB unified memory",
-                    storage: "Up to 8TB SSD",
-                    display: "14.2-inch or 16.2-inch Liquid Retina XDR display",
-                    battery: "Up to 22 hours",
-                    ports: ["3x Thunderbolt 4", "HDMI", "SDXC card slot", "MagSafe 3"],
-                    weight: "1.61 kg (14-inch) / 2.15 kg (16-inch)",
-                    dimensions: "1.55 x 31.26 x 22.12 cm",
-                    os: "macOS Ventura"
-                }
-            },
-            {
-                id: 2,
-                name: "Iphone 15",
-                specifications: {
-                    processor: "A16 Bionic chip",
-                    ram: "6GB",
-                    storage: "128GB/256GB/512GB",
-                    display: "6.1-inch Super Retina XDR OLED",
-                    battery: "3349 mAh",
-                    camera: "48MP main + 12MP ultra-wide",
-                    biometrics: "Face ID",
-                    weight: "171g",
-                    dimensions: "147.6 x 71.6 x 7.8 mm",
-                    os: "iOS 17"
-                }
-            },
-            {
-                id: 3,
-                name: "audiotechnica at-m50x",
-                specifications: {
-                    type: "Closed-back dynamic",
-                    driver: "45mm",
-                    frequency: "15-28,000 Hz",
-                    impedance: "38 ohms",
-                    sensitivity: "98 dB",
-                    cable: "Detachable 1.2m-3m coiled and straight cables",
-                    weight: "285g",
-                    connector: "3.5mm with 6.3mm adapter",
-                    foldable: "Yes",
-                    padding: "Professional-grade earpad and headband"
-                }
+        this.product = null;
+    }
+
+    async fetchProduct(id) {
+        try {
+            const response = await fetch(`http://localhost:3001/api/products/${id}`);
+            if (!response.ok) {
+                throw new Error('Product not found');
             }
-        ];
+            this.product = await response.json();
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            this.product = null;
+        }
     }
 
-    getProduct(id) {
-        return this.products.find(p => p.id === parseInt(id));
+    generateSpecifications(product) {
+        // Создаем спецификации на основе категории продукта
+        let specs = {};
+        
+        if (product.category === 'Electronics' || product.category === 'Audio') {
+            specs = {
+                name: product.name,
+                price: `$${product.price}`,
+                category: product.category,
+                description: product.description || 'Not specified',
+                details: product.details || 'Not specified'
+            };
+            
+            // Добавляем дополнительные спецификации в зависимости от названия продукта
+            if (product.name.includes('MacBook') || product.name.includes('Laptop')) {
+                specs.processor = 'Apple M2 Pro/Max';
+                specs.ram = 'Up to 96GB unified memory';
+                specs.storage = 'Up to 8TB SSD';
+                specs.display = '14.2-inch or 16.2-inch Liquid Retina XDR display';
+                specs.battery = 'Up to 22 hours';
+            } else if (product.name.includes('iPhone') || product.name.includes('Phone')) {
+                specs.processor = 'A16 Bionic chip';
+                specs.ram = '6GB';
+                specs.storage = '128GB/256GB/512GB';
+                specs.display = '6.1-inch Super Retina XDR OLED';
+                specs.battery = '3349 mAh';
+                specs.camera = '48MP main + 12MP ultra-wide';
+            } else if (product.name.includes('Audio-Technica') || product.name.includes('Headphones')) {
+                specs.type = 'Closed-back dynamic';
+                specs.driver = '45mm';
+                specs.frequency = '15-28,000 Hz';
+                specs.impedance = '38 ohms';
+                specs.sensitivity = '98 dB';
+            }
+        } else {
+            // Для других категорий
+            specs = {
+                name: product.name,
+                price: `$${product.price}`,
+                category: product.category,
+                description: product.description || 'Not specified'
+            };
+        }
+        
+        return specs;
     }
 
-    render(productId) {
+    async render(productId) {
+        await this.fetchProduct(productId);
         const app = document.getElementById('app');
-        const product = this.getProduct(productId);
 
-        if (!product) {
+        if (!this.product) {
             app.innerHTML = `
                 <div class="alert alert-danger" role="alert">
                     Product specifications not found!
@@ -68,7 +76,7 @@ export class SpecificationsPage {
             return;
         }
 
-        const specs = product.specifications;
+        const specs = this.generateSpecifications(this.product);
         const specsList = Object.entries(specs)
             .map(([key, value]) => {
                 if (Array.isArray(value)) {
@@ -90,7 +98,7 @@ export class SpecificationsPage {
         app.innerHTML = `
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">${product.name} - Technical Specifications</h2>
+                    <h2 class="mb-0">${this.product.name} - Technical Specifications</h2>
                 </div>
                 <div class="card-body">
                     ${specsList}

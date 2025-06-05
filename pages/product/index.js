@@ -1,42 +1,26 @@
 export class ProductPage {
     constructor() {
-        this.products = [
-            {
-                id: 1,
-                name: "MacBook Pro",
-                description: "High-performance laptop for professionals",
-                price: 1299.99,
-                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80",
-                details: "15.6-inch 4K display, Intel Core i9, 32GB RAM, 1TB SSD"
-            },
-            {
-                id: 2,
-                name: "Iphone 15",
-                description: "Latest smartphone with advanced features",
-                price: 799.99,
-                image: "https://avatars.mds.yandex.net/i?id=326fb1d566045e2168b621d69a6d31a7_l-5221896-images-thumbs&n=13",
-                details: "6.7-inch OLED display, 5G capable, 256GB storage"
-            },
-            {
-                id: 3,
-                name: "audiotechnica at-m50x",
-                description: "Premium noise-canceling headphones",
-                price: 749.99,
-                image: "https://avatars.mds.yandex.net/i?id=65361de8a41e42222804d07db78f39eb_l-5235360-images-thumbs&n=13",
-                details: "40-hour battery life, Active Noise Cancellation, Bluetooth 5.0"
+        this.product = null;
+    }
+
+    async fetchProduct(id) {
+        try {
+            const response = await fetch(`http://localhost:3001/api/products/${id}`);
+            if (!response.ok) {
+                throw new Error('Product not found');
             }
-        ];
+            this.product = await response.json();
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            this.product = null;
+        }
     }
 
-    getProduct(id) {
-        return this.products.find(p => p.id === parseInt(id));
-    }
-
-    render(productId) {
+    async render(productId) {
+        await this.fetchProduct(productId);
         const app = document.getElementById('app');
-        const product = this.getProduct(productId);
 
-        if (!product) {
+        if (!this.product) {
             app.innerHTML = `
                 <div class="alert alert-danger" role="alert">
                     Product not found!
@@ -49,14 +33,17 @@ export class ProductPage {
             <div class="card">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <img src="${product.image}" class="img-fluid rounded-start" alt="${product.name}">
+                        <img src="${this.product.image || 'https://via.placeholder.com/400x300'}" 
+                             class="img-fluid rounded-start" 
+                             alt="${this.product.name}"
+                             style="height: 300px; object-fit: cover;">
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h2 class="card-title">${product.name}</h2>
-                            <p class="card-text">${product.description}</p>
-                            <p class="card-text"><small class="text-muted">${product.details}</small></p>
-                            <p class="card-text"><strong>Price: $${product.price}</strong></p>
+                            <h2 class="card-title">${this.product.name}</h2>
+                            <p class="card-text">${this.product.description || this.product.category}</p>
+                            <p class="card-text"><small class="text-muted">${this.product.details || 'No additional details available'}</small></p>
+                            <p class="card-text"><strong>Price: $${this.product.price}</strong></p>
                             <div class="btn-group" role="group">
                                 <button class="btn btn-primary" id="backButton">Back to Products</button>
                                 <button class="btn btn-info text-white" id="specsButton">Specifications</button>
