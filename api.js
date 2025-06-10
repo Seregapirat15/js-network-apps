@@ -2,16 +2,49 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = 3001;
+
+// Путь к файлу с данными
+const dataFilePath = path.join(__dirname, 'data', 'products.json');
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// In-memory database
-let products = [
+// Загрузка продуктов из файла или инициализация начальными данными
+let products = [];
+
+// Функция для сохранения продуктов в файл
+const saveProductsToFile = () => {
+    // Создаем директорию data, если она не существует
+    if (!fs.existsSync(path.dirname(dataFilePath))) {
+        fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
+    }
+    // Сохраняем данные в файл
+    fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2), 'utf8');
+};
+
+// Функция для загрузки продуктов из файла
+const loadProductsFromFile = () => {
+    try {
+        // Проверяем, существует ли файл
+        if (fs.existsSync(dataFilePath)) {
+            const data = fs.readFileSync(dataFilePath, 'utf8');
+            return JSON.parse(data);
+        }
+        return null;
+    } catch (error) {
+        console.error('Error loading products from file:', error);
+        return null;
+    }
+};
+
+// Инициализация продуктов
+const initialProducts = [
     {
         id: uuidv4(),
         name: 'MacBook Pro',
@@ -104,6 +137,18 @@ let products = [
     }
 ];
 
+// Загружаем продукты из файла или используем начальные данные
+const loadedProducts = loadProductsFromFile();
+if (loadedProducts) {
+    products = loadedProducts;
+    console.log('Products loaded from file');
+} else {
+    products = initialProducts;
+    // Сохраняем начальные данные в файл
+    saveProductsToFile();
+    console.log('Initialized with default products');
+}
+
 // GET /api/products - Get all products with optional filtering
 app.get('/api/products', (req, res) => {
     let filteredProducts = [...products];
@@ -165,6 +210,10 @@ app.post('/api/products', (req, res) => {
     };
     
     products.push(newProduct);
+    
+    // Сохраняем обновленные данные в файл
+    saveProductsToFile();
+    
     res.status(201).json(newProduct);
 });
 
@@ -187,6 +236,9 @@ app.put('/api/products/:id', (req, res) => {
         details: details !== undefined ? details : products[productIndex].details
     };
     
+    // Сохраняем обновленные данные в файл
+    saveProductsToFile();
+    
     res.json(products[productIndex]);
 });
 
@@ -200,6 +252,9 @@ app.delete('/api/products/:id', (req, res) => {
     
     const deletedProduct = products[productIndex];
     products.splice(productIndex, 1);
+    
+    // Сохраняем обновленные данные в файл
+    saveProductsToFile();
     
     res.json({ message: 'Product deleted successfully', product: deletedProduct });
 });

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "7511275f-867b-4f90-9be0-bb692e803dcf",
+    "name": "MacBook Pro",
+    "price": 1299.99,
+    "category": "Electronics",
+    "description": "High-performance laptop for professionals",
+    "image": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80",
+    "details": "15.6-inch 4K display, Intel Core i9, 32GB RAM, 1TB SSD"
+  },
+  {
+    "id": "21fe468f-617f-44fb-aa76-134da8ed71a3",
+    "name": "iPhone 15",
+    "price": 799.99,
+    "category": "Electronics",
+    "description": "Latest smartphone with advanced features",
+    "image": "https://avatars.mds.yandex.net/i?id=326fb1d566045e2168b621d69a6d31a7_l-5221896-images-thumbs&n=13",
+    "details": "6.7-inch OLED display, 5G capable, 256GB storage"
+  },
+  {
+    "id": "f1fa10f8-1d4d-4a05-be8c-f9c18991e94e",
+    "name": "Audio-Technica ATH-M50x",
+    "price": 149.99,
+    "category": "Audio",
+    "description": "Professional studio monitor headphones",
+    "image": "https://avatars.mds.yandex.net/i?id=65361de8a41e42222804d07db78f39eb_l-5235360-images-thumbs&n=13",
+    "details": "Critically acclaimed sonic performance, 45mm large-aperture drivers"
+  },
+  {
+    "id": "ccc619ca-6ca5-4657-9879-6d3798b3b5cf",
+    "name": "iPad Pro",
+    "price": 999.99,
+    "category": "Electronics",
+    "description": "Powerful tablet for creative professionals",
+    "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80",
+    "details": "12.9-inch Liquid Retina XDR display, M2 chip, 512GB storage"
+  },
+  {
+    "id": "13120e36-dae8-4f12-89b6-a96621655167",
+    "name": "Apple Watch Series 8",
+    "price": 399.99,
+    "category": "Electronics",
+    "description": "Advanced health monitoring and fitness tracking",
+    "image": "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=500&q=80",
+    "details": "Always-On Retina display, ECG app, Blood Oxygen sensor"
+  },
+  {
+    "id": "414799e6-62fe-4ba1-ac33-6eb1c73e3f27",
+    "name": "Sony WH-1000XM4",
+    "price": 349.99,
+    "category": "Audio",
+    "description": "Premium wireless noise-canceling headphones",
+    "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80",
+    "details": "Industry-leading noise cancellation, 30-hour battery life"
+  },
+  {
+    "id": "dea62272-5e93-4230-8359-af959e6564f1",
+    "name": "Dell XPS 13",
+    "price": 1199.99,
+    "category": "Electronics",
+    "description": "Ultra-portable premium laptop",
+    "image": "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&q=80",
+    "details": "13.4-inch InfinityEdge display, Intel Core i7, 16GB RAM, 512GB SSD"
+  },
+  {
+    "id": "9174096c-8e3f-497a-a2a7-8a3e5b33dbe8",
+    "name": "AirPods Pro",
+    "price": 249.99,
+    "category": "Audio",
+    "description": "Wireless earbuds with active noise cancellation",
+    "image": "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500&q=80",
+    "details": "Active Noise Cancellation, Transparency mode, Adaptive EQ"
+  },
+  {
+    "id": "3d2e2a73-4f29-47c2-b9cf-a1a649b479c9",
+    "name": "Gaming Mouse",
+    "price": 79.99,
+    "category": "Gaming",
+    "description": "High-precision gaming mouse",
+    "image": "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500&q=80",
+    "details": "16,000 DPI optical sensor, programmable buttons, RGB lighting"
+  },
+  {
+    "id": "f60b7980-21c5-44f8-8a0f-1855cfcf1a4b",
+    "name": "Mechanical Keyboard",
+    "price": 159.99,
+    "category": "Gaming",
+    "description": "RGB mechanical gaming keyboard",
+    "image": "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=500&q=80",
+    "details": "Cherry MX switches, per-key RGB lighting, aluminum frame"
+  },
+  {
+    "id": "836c8f72-3c55-45f0-9fd9-a9b29e886c59",
+    "name": "test",
+    "price": 8999.99,
+    "category": "Electronics",
+    "description": "puriririiriririr",
+    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80",
+    "details": "6.1-inch AMOLED display, Snapdragon 8 Gen 2, 8GB RAM, 256GB storage"
+  },
+  {
+    "id": "8a242ea5-4498-46e0-9931-43dc4c7317fd",
+    "name": "test",
+    "price": 998999.99,
+    "category": "Electronics",
+    "description": "puriririiriririr",
+    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80",
+    "details": "6.1-inch AMOLED display, Snapdragon 8 Gen 2, 8GB RAM, 256GB storage"
+  }
+]
