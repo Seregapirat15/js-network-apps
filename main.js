@@ -41,4 +41,6 @@ class Router {
 }
 
 // Initialize the application
-new Router();
+document.addEventListener('DOMContentLoaded', () => {
+    new Router();
+});

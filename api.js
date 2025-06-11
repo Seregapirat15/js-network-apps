@@ -12,6 +12,9 @@ const port = 3001;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Serve static files from the dist directory
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // Path to products JSON file
 const productsFilePath = path.join(__dirname, 'data', 'products.json');
 
@@ -153,6 +156,11 @@ app.delete('/api/products/:id', (req, res) => {
     } else {
         res.status(500).json({ message: 'Failed to delete product' });
     }
+});
+
+// Catch-all route to serve the SPA
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.listen(port, () => {
