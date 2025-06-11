@@ -24,7 +24,7 @@
     "category": "Audio",
     "description": "Professional studio monitor headphones",
     "image": "https://avatars.mds.yandex.net/i?id=65361de8a41e42222804d07db78f39eb_l-5235360-images-thumbs&n=13",
-    "details": "Critically acclaimed sonic performance, 45mm large-aperture drivers"
+    "details": "Critically acclaimed sonic performance, 45mm large-aperture drivers2"
   },
   {
     "id": "ccc619ca-6ca5-4657-9879-6d3798b3b5cf",
@@ -88,23 +88,5 @@
     "description": "RGB mechanical gaming keyboard",
     "image": "https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=500&q=80",
     "details": "Cherry MX switches, per-key RGB lighting, aluminum frame"
-  },
-  {
-    "id": "836c8f72-3c55-45f0-9fd9-a9b29e886c59",
-    "name": "test",
-    "price": 8999.99,
-    "category": "Electronics",
-    "description": "puriririiriririr",
-    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80",
-    "details": "6.1-inch AMOLED display, Snapdragon 8 Gen 2, 8GB RAM, 256GB storage"
-  },
-  {
-    "id": "8a242ea5-4498-46e0-9931-43dc4c7317fd",
-    "name": "test",
-    "price": 998999.99,
-    "category": "Electronics",
-    "description": "puriririiriririr",
-    "image": "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=500&q=80",
-    "details": "6.1-inch AMOLED display, Snapdragon 8 Gen 2, 8GB RAM, 256GB storage"
   }
 ]

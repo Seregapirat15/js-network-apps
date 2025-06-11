@@ -1,12 +1,14 @@
 import { MainPage } from './pages/main/index.js';
 import { ProductPage } from './pages/product/index.js';
 import { SpecificationsPage } from './pages/specifications/index.js';
+import { EditProductPage } from './pages/edit-product/index.js';
 
 class Router {
     constructor() {
         this.mainPage = new MainPage();
         this.productPage = new ProductPage();
         this.specificationsPage = new SpecificationsPage();
+        this.editProductPage = new EditProductPage();
         
         // Initialize routing
         this.handleRoute();
@@ -27,6 +29,11 @@ class Router {
         } else if (hash.startsWith('#product/')) {
             const productId = hash.split('/')[1];
             this.productPage.render(productId);
+        } else if (hash.startsWith('#edit/')) {
+            const productId = hash.split('/')[1];
+            this.editProductPage.render(productId);
+        } else if (hash === '#edit') {
+            this.editProductPage.render();
         } else {
             this.mainPage.render();
         }

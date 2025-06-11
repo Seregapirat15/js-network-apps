@@ -11,7 +11,7 @@ export class MainPage {
             this.products = await response.json();
             return this.products;
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Ошибка при загрузке продуктов:', error);
             return [];
         }
     }
@@ -23,38 +23,10 @@ export class MainPage {
             });
             if (response.ok) {
                 this.products = this.products.filter(p => p.id !== id);
-                this.render(); // Re-render the page
+                this.render(); // Перерисовываем страницу
             }
         } catch (error) {
-            console.error('Error deleting product:', error);
-        }
-    }
-
-    async addNewProduct() {
-        try {
-            const newProduct = {
-                name: "New Product",
-                price: 99.99,
-                category: "Electronics",
-                description: "New product description",
-                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80"
-            };
-
-            const response = await fetch('http://localhost:3001/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newProduct)
-            });
-
-            if (response.ok) {
-                const addedProduct = await response.json();
-                this.products.push(addedProduct);
-                this.render();
-            }
-        } catch (error) {
-            console.error('Error adding product:', error);
+            console.error('Ошибка при удалении продукта:', error);
         }
     }
 
@@ -67,7 +39,7 @@ export class MainPage {
 
     createCarousel() {
         const carousel = document.createElement('div');
-        carousel.className = 'carousel slide mb-4';
+        carousel.className = 'carousel slide mb-4 shadow rounded';
         carousel.id = 'productCarousel';
         carousel.setAttribute('data-bs-ride', 'carousel');
         carousel.setAttribute('data-bs-interval', '3000');
@@ -170,35 +142,45 @@ export class MainPage {
         const app = document.getElementById('app');
         app.innerHTML = '';
 
-        // Search and Add Product controls
+        // Поиск и кнопка добавления продукта
         const controls = document.createElement('div');
-        controls.className = 'mb-4';
+        controls.className = 'mb-4 card shadow p-3';
         controls.innerHTML = `
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Search products...">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Поиск продуктов...">
+                    </div>
                 </div>
                 <div class="col-auto">
-                    <button class="btn btn-success" id="addProductBtn">Add New Product</button>
+                    <button class="btn btn-success" id="addProductBtn">
+                        <i class="bi bi-plus-circle me-1"></i> Добавить продукт
+                    </button>
                 </div>
             </div>
         `;
         app.appendChild(controls);
 
-        // Add carousel
+        // Добавляем карусель
         app.appendChild(this.createCarousel());
 
-        // Products grid container
+        // Контейнер для сетки продуктов
+        const productsSection = document.createElement('div');
+        productsSection.className = 'card shadow p-3 mt-4';
+        
         const gridTitle = document.createElement('h3');
-        gridTitle.className = 'mb-3';
-        gridTitle.textContent = 'All Products';
-        app.appendChild(gridTitle);
+        gridTitle.className = 'mb-3 card-title';
+        gridTitle.innerHTML = '<i class="bi bi-grid me-2"></i>Все продукты';
+        productsSection.appendChild(gridTitle);
 
         const productsContainer = document.createElement('div');
         productsContainer.className = 'row row-cols-1 row-cols-md-3 g-4';
-        app.appendChild(productsContainer);
+        productsSection.appendChild(productsContainer);
+        
+        app.appendChild(productsSection);
 
-        // Add event listeners
+        // Добавляем обработчики событий
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', (e) => {
             const filteredProducts = this.filterProducts(e.target.value);
@@ -206,15 +188,28 @@ export class MainPage {
         });
 
         const addBtn = document.getElementById('addProductBtn');
-        addBtn.addEventListener('click', () => this.addNewProduct());
+        addBtn.addEventListener('click', () => {
+            window.location.hash = '#edit';
+        });
 
-        // Initial render of products grid
+        // Первоначальное отображение продуктов
         this.renderProducts(this.products);
     }
 
     renderProducts(products) {
         const container = document.querySelector('.row-cols-md-3');
         container.innerHTML = '';
+        
+        if (products.length === 0) {
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'col-12 text-center py-5';
+            emptyMessage.innerHTML = `
+                <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                <p class="mt-3 text-muted">Продукты не найдены</p>
+            `;
+            container.appendChild(emptyMessage);
+            return;
+        }
         
         products.forEach(product => {
             const col = document.createElement('div');

@@ -8,149 +8,38 @@ const path = require('path');
 const app = express();
 const port = 3001;
 
-// Путь к файлу с данными
-const dataFilePath = path.join(__dirname, 'data', 'products.json');
-
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Загрузка продуктов из файла или инициализация начальными данными
-let products = [];
+// Path to products JSON file
+const productsFilePath = path.join(__dirname, 'data', 'products.json');
 
-// Функция для сохранения продуктов в файл
-const saveProductsToFile = () => {
-    // Создаем директорию data, если она не существует
-    if (!fs.existsSync(path.dirname(dataFilePath))) {
-        fs.mkdirSync(path.dirname(dataFilePath), { recursive: true });
-    }
-    // Сохраняем данные в файл
-    fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2), 'utf8');
-};
-
-// Функция для загрузки продуктов из файла
-const loadProductsFromFile = () => {
+// Helper function to read products from file
+const readProductsFromFile = () => {
     try {
-        // Проверяем, существует ли файл
-        if (fs.existsSync(dataFilePath)) {
-            const data = fs.readFileSync(dataFilePath, 'utf8');
-            return JSON.parse(data);
-        }
-        return null;
+        const data = fs.readFileSync(productsFilePath, 'utf8');
+        return JSON.parse(data);
     } catch (error) {
-        console.error('Error loading products from file:', error);
-        return null;
+        console.error('Error reading products file:', error);
+        return [];
     }
 };
 
-// Инициализация продуктов
-const initialProducts = [
-    {
-        id: uuidv4(),
-        name: 'MacBook Pro',
-        price: 1299.99,
-        category: 'Electronics',
-        description: 'High-performance laptop for professionals',
-        image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80',
-        details: '15.6-inch 4K display, Intel Core i9, 32GB RAM, 1TB SSD'
-    },
-    {
-        id: uuidv4(),
-        name: 'iPhone 15',
-        price: 799.99,
-        category: 'Electronics',
-        description: 'Latest smartphone with advanced features',
-        image: 'https://avatars.mds.yandex.net/i?id=326fb1d566045e2168b621d69a6d31a7_l-5221896-images-thumbs&n=13',
-        details: '6.7-inch OLED display, 5G capable, 256GB storage'
-    },
-    {
-        id: uuidv4(),
-        name: 'Audio-Technica ATH-M50x',
-        price: 149.99,
-        category: 'Audio',
-        description: 'Professional studio monitor headphones',
-        image: 'https://avatars.mds.yandex.net/i?id=65361de8a41e42222804d07db78f39eb_l-5235360-images-thumbs&n=13',
-        details: 'Critically acclaimed sonic performance, 45mm large-aperture drivers'
-    },
-    {
-        id: uuidv4(),
-        name: 'iPad Pro',
-        price: 999.99,
-        category: 'Electronics',
-        description: 'Powerful tablet for creative professionals',
-        image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500&q=80',
-        details: '12.9-inch Liquid Retina XDR display, M2 chip, 512GB storage'
-    },
-    {
-        id: uuidv4(),
-        name: 'Apple Watch Series 8',
-        price: 399.99,
-        category: 'Electronics',
-        description: 'Advanced health monitoring and fitness tracking',
-        image: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=500&q=80',
-        details: 'Always-On Retina display, ECG app, Blood Oxygen sensor'
-    },
-    {
-        id: uuidv4(),
-        name: 'Sony WH-1000XM4',
-        price: 349.99,
-        category: 'Audio',
-        description: 'Premium wireless noise-canceling headphones',
-        image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&q=80',
-        details: 'Industry-leading noise cancellation, 30-hour battery life'
-    },
-    {
-        id: uuidv4(),
-        name: 'Dell XPS 13',
-        price: 1199.99,
-        category: 'Electronics',
-        description: 'Ultra-portable premium laptop',
-        image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=500&q=80',
-        details: '13.4-inch InfinityEdge display, Intel Core i7, 16GB RAM, 512GB SSD'
-    },
-    {
-        id: uuidv4(),
-        name: 'AirPods Pro',
-        price: 249.99,
-        category: 'Audio',
-        description: 'Wireless earbuds with active noise cancellation',
-        image: 'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=500&q=80',
-        details: 'Active Noise Cancellation, Transparency mode, Adaptive EQ'
-    },
-    {
-        id: uuidv4(),
-        name: 'Gaming Mouse',
-        price: 79.99,
-        category: 'Gaming',
-        description: 'High-precision gaming mouse',
-        image: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=500&q=80',
-        details: '16,000 DPI optical sensor, programmable buttons, RGB lighting'
-    },
-    {
-        id: uuidv4(),
-        name: 'Mechanical Keyboard',
-        price: 159.99,
-        category: 'Gaming',
-        description: 'RGB mechanical gaming keyboard',
-        image: 'https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=500&q=80',
-        details: 'Cherry MX switches, per-key RGB lighting, aluminum frame'
+// Helper function to write products to file
+const writeProductsToFile = (products) => {
+    try {
+        fs.writeFileSync(productsFilePath, JSON.stringify(products, null, 2), 'utf8');
+        return true;
+    } catch (error) {
+        console.error('Error writing products file:', error);
+        return false;
     }
-];
-
-// Загружаем продукты из файла или используем начальные данные
-const loadedProducts = loadProductsFromFile();
-if (loadedProducts) {
-    products = loadedProducts;
-    console.log('Products loaded from file');
-} else {
-    products = initialProducts;
-    // Сохраняем начальные данные в файл
-    saveProductsToFile();
-    console.log('Initialized with default products');
-}
+};
 
 // GET /api/products - Get all products with optional filtering
 app.get('/api/products', (req, res) => {
+    const products = readProductsFromFile();
     let filteredProducts = [...products];
     
     // Filter by category
@@ -184,6 +73,7 @@ app.get('/api/products', (req, res) => {
 
 // GET /api/products/:id - Get a single product by ID
 app.get('/api/products/:id', (req, res) => {
+    const products = readProductsFromFile();
     const product = products.find(p => p.id === req.params.id);
     if (!product) {
         return res.status(404).json({ message: 'Product not found' });
@@ -209,17 +99,20 @@ app.post('/api/products', (req, res) => {
         details: details || ''
     };
     
+    const products = readProductsFromFile();
     products.push(newProduct);
     
-    // Сохраняем обновленные данные в файл
-    saveProductsToFile();
-    
-    res.status(201).json(newProduct);
+    if (writeProductsToFile(products)) {
+        res.status(201).json(newProduct);
+    } else {
+        res.status(500).json({ message: 'Failed to save product' });
+    }
 });
 
 // PUT /api/products/:id - Update a product
 app.put('/api/products/:id', (req, res) => {
     const { name, price, category, description, image, details } = req.body;
+    const products = readProductsFromFile();
     const productIndex = products.findIndex(p => p.id === req.params.id);
     
     if (productIndex === -1) {
@@ -236,14 +129,16 @@ app.put('/api/products/:id', (req, res) => {
         details: details !== undefined ? details : products[productIndex].details
     };
     
-    // Сохраняем обновленные данные в файл
-    saveProductsToFile();
-    
-    res.json(products[productIndex]);
+    if (writeProductsToFile(products)) {
+        res.json(products[productIndex]);
+    } else {
+        res.status(500).json({ message: 'Failed to update product' });
+    }
 });
 
 // DELETE /api/products/:id - Delete a product
 app.delete('/api/products/:id', (req, res) => {
+    const products = readProductsFromFile();
     const productIndex = products.findIndex(p => p.id === req.params.id);
     
     if (productIndex === -1) {
@@ -253,10 +148,11 @@ app.delete('/api/products/:id', (req, res) => {
     const deletedProduct = products[productIndex];
     products.splice(productIndex, 1);
     
-    // Сохраняем обновленные данные в файл
-    saveProductsToFile();
-    
-    res.json({ message: 'Product deleted successfully', product: deletedProduct });
+    if (writeProductsToFile(products)) {
+        res.json({ message: 'Product deleted successfully', product: deletedProduct });
+    } else {
+        res.status(500).json({ message: 'Failed to delete product' });
+    }
 });
 
 app.listen(port, () => {
